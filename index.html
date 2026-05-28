@@ -1,0 +1,2073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+<meta name="theme-color" content="#D97706" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="MealMate" />
+<title>MealMate — Bachelor Meal Prep</title>
+<link rel="manifest" href="./manifest.webmanifest" />
+<link rel="icon" type="image/png" href="./icon-192.png" />
+<link rel="apple-touch-icon" href="./icon-192.png" />
+<link rel="preload" href="./fonts/fraunces.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="./fonts/manrope.woff2" as="font" type="font/woff2" crossorigin />
+<style>
+  @font-face {
+    font-family: 'Fraunces';
+    src: url('./fonts/fraunces.woff2') format('woff2-variations');
+    font-weight: 400 900;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Manrope';
+    src: url('./fonts/manrope.woff2') format('woff2-variations');
+    font-weight: 200 800;
+    font-style: normal;
+    font-display: swap;
+  }
+</style>
+<style>
+  /* ---------- design tokens ---------- */
+  :root {
+    --cream: #FAF4E8;
+    --cream-2: #F3EAD3;
+    --paper: #FFFBF2;
+    --ink: #1A1612;
+    --ink-2: #4A3F33;
+    --ink-3: #8A7A66;
+    --line: #E5DBC4;
+    --turmeric: #D97706;
+    --turmeric-deep: #B45309;
+    --paprika: #C2410C;
+    --coriander: #65803F;
+    --coriander-deep: #4A6529;
+    --cardamom: #5C8784;
+    --danger: #B91C1C;
+    --shadow-sm: 0 1px 2px rgba(26,22,18,0.06);
+    --shadow-md: 0 4px 16px rgba(26,22,18,0.08);
+    --shadow-lg: 0 12px 32px rgba(26,22,18,0.12);
+    --radius: 14px;
+    --radius-sm: 10px;
+    --radius-lg: 22px;
+    --tabbar-h: calc(64px + env(safe-area-inset-bottom));
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; overscroll-behavior-y: contain; }
+  body {
+    font-family: 'Manrope', system-ui, -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--ink);
+    background: var(--cream);
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+    background-image:
+      radial-gradient(rgba(180,83,9,0.03) 1px, transparent 1px),
+      radial-gradient(rgba(101,128,63,0.02) 1px, transparent 1px);
+    background-size: 24px 24px, 32px 32px;
+    background-position: 0 0, 12px 12px;
+  }
+
+  h1, h2, h3, h4, h5 {
+    font-family: 'Fraunces', 'Georgia', serif;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    margin: 0;
+  }
+  h1 { font-size: 28px; font-variation-settings: 'opsz' 96; letter-spacing: -0.02em; }
+  h2 { font-size: 22px; font-variation-settings: 'opsz' 48; }
+  h3 { font-size: 17px; font-variation-settings: 'opsz' 24; font-weight: 600; }
+  h5 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-3); font-weight: 700; font-family: 'Manrope', sans-serif; }
+
+  button, input, select, textarea { font: inherit; color: inherit; }
+  button { cursor: pointer; border: none; background: none; padding: 0; }
+
+  #app {
+    min-height: 100vh;
+    padding-bottom: calc(var(--tabbar-h) + 12px);
+    padding-top: env(safe-area-inset-top);
+  }
+  .view { padding: 14px 16px 24px; max-width: 720px; margin: 0 auto; }
+
+  .topbar {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 8px 4px 18px;
+    gap: 12px;
+  }
+  .topbar .eyebrow {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-3);
+    font-weight: 600;
+  }
+  .topbar h1 { margin-top: 4px; }
+  .topbar .actions { display: flex; gap: 8px; align-self: center; }
+
+  .card {
+    background: var(--paper);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--line);
+  }
+  .card + .card { margin-top: 10px; }
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 10px;
+    gap: 8px;
+  }
+  .card-header h3 { margin: 0; }
+  .section-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-3);
+    font-weight: 700;
+    margin: 18px 4px 8px;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: var(--cream-2);
+    color: var(--ink-2);
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .pill.turmeric { background: rgba(217,119,6,0.12); color: var(--turmeric-deep); }
+  .pill.coriander { background: rgba(101,128,63,0.14); color: var(--coriander-deep); }
+
+  .meta { color: var(--ink-3); font-size: 13px; }
+  .num {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: 'opsz' 96;
+    font-weight: 600;
+    font-feature-settings: 'tnum';
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-size: 14px;
+    transition: transform 0.08s, background 0.15s;
+    min-height: 40px;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: var(--ink); color: var(--cream); }
+  .btn-primary:hover { background: #000; }
+  .btn-secondary { background: var(--cream-2); color: var(--ink); }
+  .btn-ghost { background: transparent; color: var(--ink-2); padding: 8px 10px; }
+  .btn-danger { background: rgba(185,28,28,0.10); color: var(--danger); }
+  .btn-icon {
+    width: 36px; height: 36px;
+    border-radius: 999px;
+    background: var(--cream-2);
+    color: var(--ink);
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .btn-block { width: 100%; }
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .field { display: block; margin-bottom: 12px; }
+  .field label {
+    display: block;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-3);
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .field input, .field select, .field textarea {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 15px;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    outline: none;
+    border-color: var(--turmeric);
+    box-shadow: 0 0 0 3px rgba(217,119,6,0.18);
+  }
+  .field-row { display: flex; gap: 10px; }
+  .field-row .field { flex: 1; }
+
+  .tabbar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: var(--tabbar-h);
+    padding: 6px 6px env(safe-area-inset-bottom);
+    background: rgba(250,244,232,0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    z-index: 50;
+  }
+  .tabbar button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    color: var(--ink-3);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    transition: color 0.15s;
+  }
+  .tabbar button svg { width: 22px; height: 22px; stroke-width: 1.7; }
+  .tabbar button.active { color: var(--turmeric); }
+  .tabbar button.active svg { stroke-width: 2.2; }
+
+  .sheet-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(26,22,18,0.42);
+    z-index: 100;
+    display: flex; align-items: flex-end; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.22s;
+  }
+  .sheet-backdrop.open { opacity: 1; pointer-events: auto; }
+  .sheet {
+    background: var(--cream);
+    width: 100%;
+    max-width: 720px;
+    max-height: 92vh;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    padding: 16px 18px calc(20px + env(safe-area-inset-bottom));
+    box-shadow: var(--shadow-lg);
+    transform: translateY(100%);
+    transition: transform 0.28s cubic-bezier(0.2, 0.85, 0.3, 1);
+    overflow-y: auto;
+  }
+  .sheet-backdrop.open .sheet { transform: translateY(0); }
+  .sheet-handle {
+    width: 40px; height: 4px;
+    background: var(--line);
+    border-radius: 999px;
+    margin: 0 auto 14px;
+  }
+  .sheet h2 { margin-bottom: 14px; }
+
+  .progress {
+    height: 6px;
+    background: var(--cream-2);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-top: 6px;
+  }
+  .progress > div {
+    height: 100%;
+    background: var(--coriander);
+    border-radius: 999px;
+    transition: width 0.3s;
+  }
+  .progress.over > div { background: var(--paprika); }
+
+  .list-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .list-item:last-child { border-bottom: none; }
+  .list-item .grow { flex: 1; min-width: 0; }
+  .list-item .title { display: block; font-weight: 600; color: var(--ink); }
+  .list-item .sub { display: block; font-size: 13px; color: var(--ink-3); margin-top: 2px; }
+  .list-item.bought .title { text-decoration: line-through; color: var(--ink-3); }
+  .list-item .right { font-weight: 600; color: var(--ink-2); font-feature-settings: 'tnum'; }
+
+  .check {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    border: 1.5px solid var(--line);
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--paper);
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .check.on {
+    background: var(--coriander);
+    border-color: var(--coriander);
+    color: white;
+  }
+
+  .slot {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    margin-bottom: 8px;
+    text-align: left;
+    width: 100%;
+  }
+  .slot .time-badge {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--cream-2);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .slot .grow { flex: 1; min-width: 0; }
+  .slot .slot-time {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-3);
+    font-weight: 600;
+  }
+  .slot .slot-name {
+    font-weight: 600;
+    color: var(--ink);
+    margin-top: 1px;
+  }
+  .slot .slot-meta { font-size: 12px; color: var(--ink-3); margin-top: 3px; }
+  .slot.empty .slot-name { color: var(--ink-3); font-weight: 500; font-style: italic; }
+
+  .day-chips {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 4px 16px 16px;
+    margin: 0 -16px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .day-chips::-webkit-scrollbar { display: none; }
+  .day-chip {
+    flex: 0 0 auto;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-2);
+    scroll-snap-align: start;
+  }
+  .day-chip.active {
+    background: var(--ink);
+    color: var(--cream);
+    border-color: var(--ink);
+  }
+
+  /* segmented control */
+  .segmented {
+    display: flex;
+    background: var(--cream-2);
+    border-radius: 999px;
+    padding: 3px;
+    margin-bottom: 8px;
+  }
+  .seg {
+    flex: 1;
+    padding: 9px 10px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-3);
+    transition: all 0.15s;
+  }
+  .seg.active {
+    background: var(--paper);
+    color: var(--ink);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .stat {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 14px;
+  }
+  .stat .label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-3);
+    font-weight: 600;
+  }
+  .stat .value {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: 'opsz' 144;
+    font-weight: 600;
+    font-size: 26px;
+    margin-top: 4px;
+    letter-spacing: -0.02em;
+    font-feature-settings: 'tnum';
+  }
+  .stat .delta { font-size: 12px; color: var(--ink-3); margin-top: 2px; }
+  .stat.accent { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+  .stat.accent .label { color: rgba(250,244,232,0.7); }
+
+  /* recipes */
+  .recipe-card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+  .recipe-toggle {
+    width: 100%;
+    padding: 14px 16px;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .recipe-toggle h3 { font-size: 16px; }
+  .recipe-toggle .chev {
+    color: var(--ink-3);
+    transition: transform 0.2s;
+    font-size: 14px;
+  }
+  .recipe-card.open .recipe-toggle .chev { transform: rotate(180deg); }
+  .recipe-body {
+    padding: 0 16px 16px;
+    border-top: 1px solid var(--line);
+    display: none;
+  }
+  .recipe-card.open .recipe-body { display: block; }
+  .recipe-body ul, .recipe-body ol {
+    margin: 8px 0 0;
+    padding-left: 22px;
+  }
+  .recipe-body li { margin-bottom: 6px; }
+  .recipe-tip {
+    background: rgba(217,119,6,0.08);
+    border-left: 3px solid var(--turmeric);
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--ink-2);
+    margin-top: 14px;
+  }
+
+  /* timeline */
+  .tl-item {
+    display: flex;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+    align-items: flex-start;
+    width: 100%;
+    text-align: left;
+  }
+  .tl-item:last-child { border-bottom: none; }
+  .tl-item .check { margin-top: 2px; }
+  .tl-item .grow { flex: 1; min-width: 0; }
+  .tl-time {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--turmeric-deep);
+    font-weight: 700;
+    display: block;
+  }
+  .tl-action {
+    font-weight: 600;
+    color: var(--ink);
+    margin-top: 2px;
+    display: block;
+  }
+  .tl-item.done .tl-action { text-decoration: line-through; color: var(--ink-3); }
+  .tl-why {
+    font-size: 12px;
+    color: var(--ink-3);
+    margin-top: 2px;
+    display: block;
+  }
+
+  /* empty state */
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--ink-3);
+  }
+  .empty-state .emoji { font-size: 48px; display: block; margin-bottom: 8px; }
+
+  /* toast */
+  .toast {
+    position: fixed;
+    bottom: calc(var(--tabbar-h) + 16px);
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--ink);
+    color: var(--cream);
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: var(--shadow-md);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.25s;
+    z-index: 200;
+    max-width: 80%;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* mini bar chart */
+  .bars {
+    display: flex;
+    gap: 6px;
+    align-items: flex-end;
+    height: 80px;
+    margin-top: 12px;
+  }
+  .bar-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .bar-col .bar {
+    width: 100%;
+    background: var(--turmeric);
+    border-radius: 4px 4px 0 0;
+    min-height: 2px;
+    transition: height 0.3s;
+  }
+  .bar-col .bar.zero { background: var(--cream-2); }
+  .bar-col .bar-label {
+    font-size: 10px;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+  }
+
+  .dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+
+  .hidden { display: none !important; }
+  .text-right { text-align: right; }
+  .mt-12 { margin-top: 12px; }
+  .mt-18 { margin-top: 18px; }
+  .flex { display: flex; }
+  .between { justify-content: space-between; align-items: center; }
+
+  .tabbar, .slot, .day-chip, .check, .btn, .pill, .seg { user-select: none; }
+</style>
+</head>
+<body>
+  <main id="app" aria-live="polite"></main>
+
+  <nav class="tabbar" role="tablist">
+    <button data-tab="today" aria-label="Today">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg>
+      <span>Today</span>
+    </button>
+    <button data-tab="plan" aria-label="Plan">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>
+      <span>Plan</span>
+    </button>
+    <button data-tab="prep" aria-label="Prep">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v6"/><path d="M18 2v6"/><path d="M4 8h16l-1.5 11a2 2 0 0 1-2 1.8H7.5a2 2 0 0 1-2-1.8L4 8Z"/></svg>
+      <span>Prep</span>
+    </button>
+    <button data-tab="shop" aria-label="Shop">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2l2.5 12h11l2-9H6"/><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/></svg>
+      <span>Shop</span>
+    </button>
+    <button data-tab="money" aria-label="Money">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M7 6h10M7 10h10M7 6c2.5 0 4 1.5 4 4M7 14h6l-4 6"/></svg>
+      <span>Money</span>
+    </button>
+  </nav>
+
+  <div class="sheet-backdrop" id="sheet-backdrop">
+    <div class="sheet" id="sheet" role="dialog" aria-modal="true"></div>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+
+<script>
+'use strict';
+
+const $ = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+const uid = () => Math.random().toString(36).slice(2, 9);
+const todayStr = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
+const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+const DAY_LABELS = { monday: 'Mon', tuesday: 'Tue', wednesday: 'Wed', thursday: 'Thu', friday: 'Fri', saturday: 'Sat', sunday: 'Sun' };
+const TIME_LABELS = { breakfast: 'Breakfast', lunch: 'Lunch', snack: 'Snack', dinner: 'Dinner' };
+const TIME_EMOJI = { breakfast: '☕', lunch: '🍱', snack: '🥜', dinner: '🍽️' };
+
+function escapeHtml(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function fmtMoney(n, cur = '₹') {
+  if (n == null || isNaN(n)) return `${cur}—`;
+  return `${cur}${Math.round(n).toLocaleString('en-IN')}`;
+}
+function todayDayKey() {
+  return DAYS[(new Date().getDay() + 6) % 7];
+}
+
+let toastT = null;
+function toast(msg) {
+  const el = $('#toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastT);
+  toastT = setTimeout(() => el.classList.remove('show'), 2000);
+}
+
+const STORAGE_KEY = 'mealmate.v1';
+const CURRENT_VERSION = 2;
+
+function defaultState() {
+  // ---- MEALS (with assembly notes) ----
+  const m = (id, name, time, kcal, protein, ingredients, notes = '') => ({ id, name, time, kcal, protein, ingredients, notes });
+  const meals = [
+    // BREAKFASTS
+    m('m_veg_poha', 'Veg poha + 2 boiled eggs + hung curd', 'breakfast', 530, 32,
+      ['1 cup poha (rinsed and drained)', '2 boiled eggs', '1 small onion (chopped)', '1 green chili', '1 tsp mustard seeds', 'curry leaves', '¼ tsp turmeric', '1 small carrot (diced)', 'lemon', '200g hung curd', '1 tsp honey'],
+      'Heat 1 tsp oil → pop mustard seeds → add curry leaves + green chili. Sauté onion 1 min, add diced carrot 1 min. Add turmeric + rinsed poha + ½ tsp salt. Stir gently 2 min. Squeeze lemon. Top with sliced boiled eggs. Hung curd + honey on the side.'),
+    m('m_egg_paneer_bhurji', 'Egg-paneer bhurji + phulka', 'breakfast', 540, 38,
+      ['3 eggs', '50g paneer (crumbled)', '1 small onion', '1 small tomato', '1 green chili', '1 tsp bowl spice', '1 phulka'],
+      'Heat 1 tsp oil → sauté onion + green chili 1 min → add chopped tomato + bowl spice, cook 2 min. Beat eggs with crumbled paneer, pour in, stir constantly for 2 min until just set. Eat with a hot phulka.'),
+    m('m_ragi_porridge', 'Ragi porridge + 2 boiled eggs', 'breakfast', 480, 28,
+      ['¼ cup ragi flour', '1 cup water', '1 cup milk', '1 tsp honey', '5–6 almonds (chopped)', '2 boiled eggs'],
+      'Dry-toast ragi flour in a pan 2 min until fragrant (this matters — big flavor boost). Whisk with cold water until lump-free. Cook on low 3–4 min stirring. Add milk + honey, cook 2 more min. Top with chopped almonds. Eat with 2 boiled eggs.'),
+    m('m_paneer_toast_brk', 'Egg-paneer "avocado" toast + hung curd bowl', 'breakfast', 550, 32,
+      ['1 boiled egg', '50g paneer', '1 tsp olive oil', 'salt', '¼ tsp chili flakes', '2 slices bread (toasted)', '200g hung curd', '1 tsp honey'],
+      'Mash boiled egg + paneer + olive oil + salt + chili flakes with a fork. Spread thick on hot toast. Side bowl: hung curd + honey.'),
+    m('m_egg_scramble_brk', 'Big egg scramble w/ paneer-capsicum + phulka', 'breakfast', 590, 38,
+      ['3 eggs', '50g paneer', '1 small onion', '1 small tomato', '½ capsicum', '1 tsp bowl spice', '1 phulka'],
+      'Sauté onion + capsicum 2 min in 1 tsp oil. Add tomato + bowl spice, cook 1 min. Add beaten eggs + crumbled paneer, scramble 2 min. Eat with a phulka.'),
+
+    // LUNCHES
+    m('m_matta_chick_bowl', 'Matta rice bowl: chicken + spinach + chana', 'lunch', 790, 60,
+      ['1 cup cooked matta rice', '200g cooked chicken', 'spinach side (warmed)', 'handful spiced chana', '5–6 cucumber slices', '4 cherry tomatoes', '40g paneer (cubed)', '3 tbsp garlic-hung curd sauce', '1 tsp olive oil'],
+      'Lunch box (cold packing): rice + chicken + spinach + chana in main compartment, cucumber + tomato + paneer in side. Sauce jar separate. At lunch: microwave main 90 sec, add cold veg + sauce on top, drizzle olive oil. Never microwave the veg.'),
+    m('m_fish_lunch', 'Fish lunch — matta + mackerel + veg medley + raita', 'lunch', 780, 55,
+      ['1 cup cooked matta rice', '1 cooked mackerel (or 2 sardines)', 'veg medley (carrot-beans-cabbage thoran)', 'handful spiced chana', 'lemon wedge', '3 tbsp hung curd raita'],
+      'EAT TUESDAY (fish loses quality after 3 days). Reheat fish on tawa, not microwave: tawa low heat, splash of water, cover with lid 90 sec — keeps it moist. Rice + veg medley microwaved 60 sec separately. Squeeze lemon over the fish, raita on side.'),
+    m('m_spicy_bowl', 'Spicy chili-crisp matta chicken bowl', 'lunch', 800, 58,
+      ['1 cup cooked matta rice', '200g cooked chicken', 'veg medley', 'handful spiced chana', '1 generous tbsp schezwan or chili crisp', '2 tbsp garlic-hung curd sauce', '1 tsp olive oil'],
+      'Same assembly as Monday but swap the sauce for schezwan/chili crisp on top of the hung curd. The double-sauce thing is the trick — heat + cool.'),
+    m('m_med_fish_plate', 'Mediterranean fish plate — matta + fish + spinach + tahini', 'lunch', 770, 52,
+      ['1 cup cooked matta rice', 'remaining cooked fish', 'spinach side', 'handful spiced chana', '3 tbsp tahini-lemon sauce', 'lemon wedge'],
+      'EAT THURSDAY. Reheat fish on tawa (not microwave) 90 sec with splash of water. Drizzle tahini-lemon sauce generously over everything when you eat. Lemon at the very end.'),
+    m('m_final_bowl', 'Clear-the-fridge final bowl', 'lunch', 800, 58,
+      ['remaining matta rice', 'remaining chicken', 'remaining chana', 'remaining veg', 'all remaining sauce'],
+      'FRIDAY. Use up whatever is left — be generous, clear the fridge before weekend grocery run. Microwave 90 sec, all the sauce on top, lemon to brighten.'),
+
+    // SNACKS
+    m('m_apple_almond', 'Apple + almonds + coffee/tea', 'snack', 280, 8,
+      ['1 apple', '~15 almonds', 'black coffee or green tea'],
+      'No cooking. Eat the apple whole, slow down with the coffee.'),
+    m('m_hung_curd_snack', 'Hung curd + honey + almonds', 'snack', 290, 20,
+      ['200g hung curd', '1 tsp honey', '8–10 chopped almonds'],
+      'Scoop curd, drizzle honey, sprinkle almonds. 30 seconds total. Hung curd is what makes this 20g protein vs 12g for regular curd.'),
+    m('m_phulka_pb', 'Phulka + peanut butter + banana', 'snack', 320, 12,
+      ['1 phulka (warm)', '1 tbsp peanut butter', '1 banana'],
+      'Warm a phulka for 30 sec on tawa. Spread PB. Lay banana slices on top. Roll if you want, or eat open.'),
+
+    // DINNERS
+    m('m_lauki_phulka_eggs', 'Lauki sabzi + 2 phulkas + 2 boiled eggs + hung curd', 'dinner', 600, 42,
+      ['~½ lauki (cubed small)', '1 tbsp mustard oil', '½ tsp cumin seeds', '¼ tsp turmeric', '¼ tsp chili powder', 'salt', '¼ cup water', '2 phulkas', '2 boiled eggs', '4 tbsp hung curd'],
+      'MONDAY DINNER. Heat mustard oil in kadhai → splutter cumin → add cubed lauki + turmeric + chili + salt. Stir 1 min. Splash ¼ cup water, cover, cook on low 8 min until tender. Uncover, evaporate liquid 1 min. Warm phulkas on tawa (45 sec each side). Plate with halved boiled eggs and hung curd.'),
+    m('m_cabbage_chick_stir', 'Cabbage-chicken stir fry + phulka', 'dinner', 600, 50,
+      ['150g chicken (sliced thin from cooked stock OR fresh)', '2 cups shredded cabbage', '½ onion (sliced)', '1 green chili', '1 tbsp soy sauce', '1 tsp bowl spice', '1 tbsp oil', '1 phulka'],
+      'TUESDAY DINNER. 1 pan, 6 minutes total. High heat → oil → onion + green chili 30 sec. Add cabbage, stir 2 min until edges brown but cabbage still has crunch. Add sliced chicken + soy + bowl spice, toss 2 min. Plate. Phulka on the side.'),
+    m('m_paneer_egg_fried_rice', 'Paneer-egg-capsicum fried rice', 'dinner', 660, 42,
+      ['1.5 cups leftover matta rice (cold)', '2 eggs (beaten)', '80g paneer (cubed)', '½ capsicum (diced)', '½ onion', '1 green chili', '1 tbsp soy sauce or schezwan', '1 tbsp oil'],
+      'WEDNESDAY DINNER. 1 pan, 8 minutes. Heat oil high → scramble eggs, push aside. Add onion + capsicum + chili, 2 min. Add paneer cubes, brown lightly 1 min. Add cold rice, break up clumps, stir-fry 2 min. Drizzle soy/schezwan, toss with eggs back in. Done.'),
+    m('m_chick_lauki_stew', 'Chicken-lauki stew + phulka', 'dinner', 640, 48,
+      ['150g remaining cooked chicken', '~⅓ lauki (cubed)', '1 small tomato (diced)', '1 cup water', '1 tsp bowl spice', 'salt', 'lemon', '1 phulka'],
+      'THURSDAY DINNER. Soupy and comforting. Pot → 1 tsp oil → tomato + bowl spice + salt, cook 1 min. Add lauki + water, simmer 8 min until lauki tender. Add chicken, heat 2 min more. Squeeze lemon. Eat with phulka to soak up the broth.'),
+    m('m_eat_out', 'Eat out — protein-heavy', 'dinner', 700, 45,
+      ['tandoori chicken / kebabs / grilled fish / dal-chicken / sushi'],
+      'FRIDAY. Celebrate the week. Order or eat out — but lean protein-heavy. Avoid the deep-fried-batter zone (pakora, chilli paneer dripping in oil, etc.). Indian grills / tandoor / Japanese / Mediterranean are easy wins. Log the cost in Money.'),
+  ];
+
+  const slot = (b, l, s, d) => ({ breakfast: b, lunch: l, snack: s, dinner: d });
+  const plan = {
+    monday:    slot('m_veg_poha',          'm_matta_chick_bowl', 'm_apple_almond',     'm_lauki_phulka_eggs'),
+    tuesday:   slot('m_egg_paneer_bhurji', 'm_fish_lunch',       'm_hung_curd_snack',  'm_cabbage_chick_stir'),
+    wednesday: slot('m_ragi_porridge',     'm_spicy_bowl',       'm_phulka_pb',        'm_paneer_egg_fried_rice'),
+    thursday:  slot('m_paneer_toast_brk',  'm_med_fish_plate',   'm_apple_almond',     'm_chick_lauki_stew'),
+    friday:    slot('m_egg_scramble_brk',  'm_final_bowl',       'm_hung_curd_snack',  'm_eat_out'),
+    saturday:  slot(null, null, null, null),
+    sunday:    slot(null, null, null, null),
+  };
+
+  // ---- GROCERIES (weekly / pantry / kitchen) ----
+  const g = (id, name, qty, price, cat, kind = 'weekly', note = '') => ({ id, name, qty, price, cat, kind, note, bought: false });
+  const groceries = [
+    // WEEKLY RECURRING
+    g('g_chicken',  'Chicken thigh (boneless)',     '1.5 kg',          475, 'Protein', 'weekly', 'Licious / FreshToHome / local butcher (cheaper, ~₹275/kg)'),
+    g('g_fish',     'Mackerel (bangda) or sardine', '500 g',           215, 'Protein', 'weekly', 'Fresh from morning fish market is gold. Ask them to clean + gut.'),
+    g('g_eggs',     'Eggs',                          '18 pcs',          135, 'Protein', 'weekly', ''),
+    g('g_curd',     'Hung / Greek curd',             '1 kg',            230, 'Dairy',   'weekly', 'Epigamia is easiest. Or hang 1 kg regular curd in muslin 2h → ½ kg hung.'),
+    g('g_paneer',   'Paneer (fresh)',                '200 g',           100, 'Dairy',   'weekly', 'Amul / Mother Dairy / Milky Mist'),
+    g('g_matta',    'Matta rice (Kerala red)',       '1 kg (lasts 2 wk)',125,'Grain',   'weekly', 'Nirapara / Double Horse. Brown rice is a fine swap.'),
+    g('g_atta',     'Whole wheat atta (for phulkas)','as needed',          0,'Grain',   'weekly', 'Aashirvaad / Fortune'),
+    g('g_ragi',     'Ragi flour',                    '500 g',            75, 'Grain',   'weekly', 'Manna / Tata Sampann / local mill'),
+    g('g_poha',     'Poha (medium thickness)',       '500 g',            50, 'Grain',   'weekly', 'Patanjali / 24 Mantra'),
+    g('g_chana',    'Kabuli chana (dry)',            '500 g',            75, 'Legume',  'weekly', 'Tata Sampann / 24 Mantra'),
+    g('g_spinach',  'Spinach (palak)',               '1 bunch (~250g)',  40, 'Veg',     'weekly', 'Local sabzi-wala — Blinkit charges 40–60% more for veg.'),
+    g('g_cabbage',  'Cabbage (small)',               '~500 g',           30, 'Veg',     'weekly', ''),
+    g('g_lauki',    'Lauki (bottle gourd)',          '~600 g',           40, 'Veg',     'weekly', ''),
+    g('g_carrot',   'Carrots',                       '250 g',            30, 'Veg',     'weekly', ''),
+    g('g_beans',    'French beans',                  '250 g',            40, 'Veg',     'weekly', ''),
+    g('g_capsicum', 'Capsicum (green/red)',          '2 pcs',            60, 'Veg',     'weekly', ''),
+    g('g_tomato',   'Tomatoes',                      '500 g',            45, 'Veg',     'weekly', ''),
+    g('g_onion',    'Onions',                        '500 g',            30, 'Veg',     'weekly', ''),
+    g('g_ginger',   'Ginger',                        '100 g',            25, 'Veg',     'weekly', ''),
+    g('g_garlic',   'Garlic',                        '100 g',            30, 'Veg',     'weekly', ''),
+    g('g_chili',    'Green chillies',                '50 g',             15, 'Veg',     'weekly', ''),
+    g('g_coriander','Coriander leaves',              '1 bunch',          15, 'Veg',     'weekly', ''),
+    g('g_lemon',    'Lemons',                        '6 pcs',            40, 'Veg',     'weekly', ''),
+    g('g_cucumber', 'Cucumbers',                     '4 pcs',            40, 'Veg',     'weekly', ''),
+    g('g_apple',    'Apples (or banana)',            '6 pcs',           150, 'Fruit',   'weekly', ''),
+
+    // PANTRY (one-time, lasts 1-3 months)
+    g('p_olive',    'Olive oil (raw drizzle only)',  '500 ml',          425, 'Oil',     'pantry', 'Figaro / Borges Pomace. ~2 months.'),
+    g('p_mustard',  'Mustard / coconut oil',         '1 L',             220, 'Oil',     'pantry', 'Fortune / Parachute (food-grade). Use for fish & South Indian veg. ~1 month.'),
+    g('p_groundnut','Groundnut oil (general)',       '1 L',             175, 'Oil',     'pantry', '~1 month.'),
+    g('p_honey',    'Honey',                         '250 g',           215, 'Other',   'pantry', 'Dabur / Apis. ~1 month.'),
+    g('p_almonds',  'Almonds (initial stock)',       '200 g',           215, 'Other',   'pantry', '~10 days. Re-buy weekly after that.'),
+    g('p_tahini',   'Tahini (or peanut butter)',     '200–400 g',       375, 'Other',   'pantry', 'Urban Platter tahini OR MyFitness PB.'),
+    g('p_mustard_s','Mustard seeds (rai)',           '100 g',            40, 'Spice',   'pantry', 'For tempering. ~3 months.'),
+    g('p_curry',    'Curry leaves',                  '1 sprig',          15, 'Spice',   'pantry', 'Freeze them — lasts a month frozen.'),
+    g('p_cumin',    'Cumin powder (jeera)',          '100 g',            70, 'Spice',   'pantry', 'Tata Sampann / Everest.'),
+    g('p_paprika',  'Kashmiri chili powder',         '100 g',            75, 'Spice',   'pantry', 'MDH / Everest. Color, not heat.'),
+    g('p_garam',    'Garam masala',                  '100 g',            80, 'Spice',   'pantry', ''),
+    g('p_dhania',   'Coriander powder',              '100 g',            60, 'Spice',   'pantry', ''),
+    g('p_haldi',    'Turmeric powder (haldi)',       '100 g',            50, 'Spice',   'pantry', ''),
+    g('p_pepper',   'Black pepper',                  '50 g',            100, 'Spice',   'pantry', ''),
+    g('p_salt',     'Salt',                          '1 kg',             40, 'Spice',   'pantry', 'Tata Salt.'),
+    g('p_sriracha', 'Sriracha hot sauce',            '200 ml',          215, 'Other',   'pantry', 'Huy Fong / Veeba.'),
+    g('p_schezwan', 'Schezwan / chili crisp',        '200 g',           185, 'Other',   'pantry', "Ching's / Lao Gan Ma."),
+    g('p_chaat',    'Chaat masala',                  '100 g',            60, 'Spice',   'pantry', 'MDH.'),
+
+    // KITCHEN (one-time equipment — starting new)
+    g('k_cooker',     'Pressure cooker (3–5 L)',        '1 pc',     1400, 'Cookware',  'kitchen', 'For rice + chana. Hawkins / Prestige.'),
+    g('k_kadhai',     'Wide pan / kadhai',              '1 pc',      700, 'Cookware',  'kitchen', 'For chicken. Heavy-bottom non-stick or steel.'),
+    g('k_tawa',       'Flat pan / tawa',                '1 pc',      500, 'Cookware',  'kitchen', 'For fish + phulkas. Keep separate from chicken pan if you can — fish smell sticks.'),
+    g('k_containers', 'Glass meal-prep containers',     '5–6 pcs',   800, 'Storage',   'kitchen', 'Borosil / Signoraware. Lids matter.'),
+    g('k_jars',       'Small sauce jars (50–100 ml)',   '4–5 pcs',   150, 'Storage',   'kitchen', 'Old jam jars work fine too.'),
+    g('k_muslin',     'Muslin cloth (for hanging curd)','1',          60, 'Tool',      'kitchen', 'Or a clean cotton T-shirt.'),
+    g('k_knife',      'Chef knife (basic but sharp)',   '1',         500, 'Tool',      'kitchen', "A dull knife is more dangerous than a sharp one."),
+    g('k_board',      'Cutting board',                  '1',         300, 'Tool',      'kitchen', ''),
+    g('k_bowl',       'Large mixing bowl',              '1',         300, 'Tool',      'kitchen', 'For chicken marinade.'),
+    g('k_scale',      'Kitchen weighing scale',         '1',         400, 'Tool',      'kitchen', 'Optional but life-changing. Stops guessing portions.'),
+    g('k_grater',     'Box grater',                     '1',         250, 'Tool',      'kitchen', 'For ginger, garlic, cucumber, paneer.'),
+    g('k_strainer',   'Mesh strainer / colander',       '1',         200, 'Tool',      'kitchen', 'For rice + chana.'),
+    g('k_tongs',      'Kitchen tongs',                  '1',         200, 'Tool',      'kitchen', 'For flipping fish and chicken pieces.'),
+  ];
+
+  // ---- PREP (Sunday cook timeline + recipes + sauces) ----
+  const prep = {
+    timeline: [
+      { time: 'Sat night',  action: 'Soak chana in plenty of water — overnight',  why: 'Saves 30 min on Sunday' },
+      { time: 'Sat night',  action: 'Take chicken + fish out of freezer if frozen', why: 'Thaw in fridge overnight' },
+      { time: '0:00–0:05',  action: 'Mix chicken marinade. Separately, mix fish marinade.', why: 'Both marinate while you do everything else (15+ min minimum)' },
+      { time: '0:05–0:15',  action: 'Start matta rice in pressure cooker — 4 whistles + 10 min low', why: 'Hands-off. Matta takes 35–40 min total.' },
+      { time: '0:15–0:25',  action: 'Boil 8 eggs — 9 min in boiling water', why: 'Hands-off. Cold-water dunk after, makes peeling easy.' },
+      { time: '0:25–0:35',  action: 'Pressure-cook drained soaked chana — 3 whistles + 10 min low', why: 'Hands-off' },
+      { time: '0:35–0:55',  action: 'Cook chicken in TWO batches, no extra oil', why: "Don't crowd the pan or it steams instead of browning. Browning = flavor." },
+      { time: '0:55–1:05',  action: 'Cook veg medley (carrot-beans-cabbage thoran) — 8 min', why: 'Single pan, quick' },
+      { time: '1:05–1:15',  action: 'Cook spinach side — 5 min', why: 'Wilts fast' },
+      { time: '1:15–1:25',  action: 'Pan-fry fish — 6–8 min total. Open window first.', why: 'Goes last because of the smell. Cover all other food first.' },
+      { time: '1:25–1:30',  action: 'Whisk garlic-hung curd sauce in a jar', why: '3 min' },
+      { time: '1:30–1:35',  action: 'Spice the warm cooked chana', why: '3 min' },
+      { time: '1:35–1:50',  action: 'Portion everything into containers, label, cool, refrigerate', why: 'Plate up the entire week' },
+    ],
+    recipes: [
+      {
+        id: 'r_chicken',
+        name: 'Master Marinated Chicken',
+        servings: 'Yields ~900g cooked = 3 lunch portions of 200g + 2 dinner portions of 150g',
+        ingredients: [
+          '1.2 kg boneless chicken thigh, cut into 2-inch chunks',
+          '3 tbsp mustard oil or groundnut oil',
+          '2 tsp salt',
+          '2 tsp cumin powder (jeera)',
+          '2 tsp Kashmiri chili powder',
+          '1 tsp garam masala',
+          '1 tsp coriander powder',
+          '1 tsp turmeric',
+          '8 fresh garlic cloves, minced',
+          '1-inch piece ginger, grated',
+          '1 tsp black pepper',
+          'Juice of 1 lemon',
+        ],
+        steps: [
+          'In a large bowl, combine all spices, oil, ginger-garlic, lemon juice. Add chicken. Mix thoroughly with your hands so every piece is coated.',
+          'Cover, set aside at least 15 min (longer = better. Up to 24h in fridge is great.)',
+          'Heat a wide pan (kadhai or non-stick) on medium-high. No extra oil — the marinade has plenty.',
+          'Cook chicken in TWO batches. This is critical — overcrowding makes it steam instead of brown. Spread pieces in a single layer.',
+          "Don't stir for 3–4 min, then flip. Cook 6–7 min per batch total.",
+          'Pieces should be deeply golden-brown on edges, fully cooked inside (no pink in center).',
+          'Tip into a clean container. Let cool to room temp before refrigerating (hot food = condensation = soggy chicken).',
+        ],
+        tip: "If your pan is small, use a wider tawa for the second batch. Pale chicken = sad chicken — color is flavor.",
+      },
+      {
+        id: 'r_fish',
+        name: 'Pan-Fried Fish (Mackerel / Sardine)',
+        servings: '2 lunch portions (Tuesday + Thursday)',
+        ingredients: [
+          '500g mackerel (bangda) or sardine (mathi), cleaned + scaled + gutted (ask the fishmonger to do this)',
+          '1 tsp turmeric',
+          '2 tsp Kashmiri chili powder',
+          '1 tsp coriander powder',
+          '1 tsp salt',
+          'Juice of half a lemon',
+          '1 tbsp ginger-garlic paste',
+          '3 tbsp coconut oil or mustard oil',
+          'Optional: ½ tsp fenugreek (or kasuri methi)',
+        ],
+        steps: [
+          'Slash the fish twice on each side, about ½ inch deep. This lets the marinade penetrate.',
+          'Mix all spices + lemon + ginger-garlic into a thick paste. Rub it all over the fish, into the slashes. Rest 15 min.',
+          'Heat oil in a flat pan until shimmering (not smoking). Lay fish in carefully, away from you to avoid splatter.',
+          'Mackerel: 3 min on each side. Sardine: 2 min per side. Don\'t move them — let the crust form.',
+          'Lift onto a plate. Cool fully before refrigerating.',
+          'Store in the tightest-sealing container you own — fish smell migrates.',
+        ],
+        tip: "Cook fish LAST on Sunday and open the window first. After cooking, wipe stove with vinegar-water spray. Boil a small pot of water with cinnamon + cloves for 10 min — kills the kitchen smell.",
+      },
+      {
+        id: 'r_matta',
+        name: 'Matta Rice (Kerala Red Rice)',
+        servings: '~5 cups cooked',
+        ingredients: [
+          '2 cups matta rice (uncooked, ~400g)',
+          '5 cups water (matta absorbs much more than basmati)',
+          '1 tsp salt',
+          '1 tsp coconut oil or ghee',
+        ],
+        steps: [
+          'Rinse rice 2x in cold water. Soaking 30 min before cooking is optional but makes it softer.',
+          'Combine rice, water, salt, oil in a pressure cooker.',
+          '4 whistles on medium heat, then 10 min on low. Natural release.',
+          'Open, fluff with a fork. Tender with a slight chew is right. Spread on a wide plate to cool before storing.',
+        ],
+        tip: "No matta available? Brown rice works the exact same way — same ratio, same method. Basmati if you want a lighter day; it's a 15-min separate cook.",
+      },
+      {
+        id: 'r_chana',
+        name: 'Spiced Chana',
+        servings: '5 days of side',
+        ingredients: [
+          '500g dry kabuli chana (soaked 8+ hours overnight)',
+          '2 tbsp olive oil',
+          '1 tsp salt',
+          '1 tsp chaat masala',
+          '1 tsp cumin powder',
+          '½ tsp Kashmiri chili powder',
+          'Juice of half a lemon',
+        ],
+        steps: [
+          'Pressure-cook soaked chana with fresh water + 1 tsp salt for 3 whistles, then 10 min on low. Drain completely.',
+          'While still warm, toss in a bowl with olive oil and all spices. Add lemon last.',
+          'Cool fully before storing.',
+        ],
+        tip: '',
+      },
+      {
+        id: 'r_veg',
+        name: 'Veg Medley (Carrot-Beans-Cabbage Thoran)',
+        servings: '4 days of side',
+        ingredients: [
+          '1 carrot, diced small',
+          'Handful of French beans, cut into ½-inch pieces',
+          '¼ cabbage (small), shredded',
+          '1 capsicum, diced',
+          '2 tbsp coconut or groundnut oil',
+          '1 tsp mustard seeds',
+          '1 sprig curry leaves',
+          '2 green chillies, slit',
+          '1 small onion, sliced',
+          '½ tsp turmeric',
+          '1 tsp salt',
+          '1 tsp coriander powder',
+          'Optional: 2 tbsp grated coconut',
+        ],
+        steps: [
+          'Heat oil in a kadhai. Add mustard seeds — let them pop (15 sec).',
+          'Add curry leaves + green chillies. Sizzle 5 sec.',
+          'Add onion, sauté 1 min until translucent.',
+          'Add carrots + beans first (they take longest). Stir, cover, cook 3 min.',
+          'Add cabbage, capsicum, turmeric, salt, coriander powder. Stir, cover, cook 3 min on medium.',
+          'Uncover, stir-fry 1 min to crisp up edges. Add coconut if using. Lemon at the end.',
+        ],
+        tip: "Grated coconut turns this into a proper Kerala thoran.",
+      },
+      {
+        id: 'r_spinach',
+        name: 'Spinach Side',
+        servings: 'Mon + Tue lunches',
+        ingredients: [
+          '1 bunch spinach (~250g), rinsed and roughly chopped',
+          '1 tbsp oil',
+          '1 tsp cumin seeds',
+          '3 garlic cloves, minced',
+          '1 green chili, slit',
+          '½ tsp salt',
+          'Squeeze of lemon',
+        ],
+        steps: [
+          'Heat oil. Add cumin and garlic. Sizzle 30 sec.',
+          'Add green chili, then spinach. It will collapse rapidly — cook 2 min, stirring.',
+          'Salt + lemon. Done.',
+        ],
+        tip: '',
+      },
+      {
+        id: 'r_sauce',
+        name: 'Garlic-Hung Curd Sauce (Indian Tzatziki)',
+        servings: 'A jar that lasts 4 days',
+        ingredients: [
+          '500g hung curd (or Greek yogurt — Epigamia is the easy buy)',
+          '4 garlic cloves, grated or finely minced',
+          'Juice of 1 lemon',
+          '2 tbsp olive oil',
+          '1 tsp salt',
+          '½ tsp black pepper',
+          '2 tbsp chopped coriander',
+          'Optional: ¼ cup grated cucumber, squeezed dry',
+        ],
+        steps: [
+          'Whisk everything together in a jar with a lid.',
+          'Taste. Adjust salt/lemon. Done. Literally 3 minutes.',
+        ],
+        tip: "To make your own hung curd: 1 kg regular curd → muslin cloth → tie up → hang over the sink 2h (or in fridge 4h). The whey drains out, you get ~500g of Greek-style curd at half the cost of Epigamia. Variations: + minced green chili & mint for spicy; replace half curd with tahini for a Middle Eastern twist; blend with coriander + green chili + ginger for a chutney version.",
+      },
+    ],
+    sauces: [
+      {
+        id: 's_blend',
+        name: 'Master "Bowl Spice" Blend',
+        body: 'Mix in a small jar and label it. Sprinkle on chicken, eggs, paneer, rice, fish — anything.',
+        ingredients: ['3 tbsp cumin powder', '3 tbsp Kashmiri chili / paprika', '2 tbsp coriander powder', '2 tbsp garlic powder', '1 tbsp black pepper', '1 tbsp garam masala', '1 tbsp turmeric', '1 tbsp salt', "Optional: 1 tbsp dried oregano or za'atar"],
+      },
+      {
+        id: 's_tahini',
+        name: 'Tahini-Lemon Sauce',
+        body: 'Whisk everything together. Drizzle over everything. Keeps 7 days.',
+        ingredients: ['4 tbsp tahini', '3 tbsp warm water', '2 tbsp lemon juice', '1 minced garlic clove', '½ tsp salt'],
+      },
+      {
+        id: 's_green',
+        name: 'Green Coriander-Chili Sauce',
+        body: 'Blend everything smooth. Fire. Keeps 5 days.',
+        ingredients: ['1 cup coriander leaves', '½ cup mint leaves', '2 green chillies', '1 garlic clove', 'Juice of 1 lemon', '1 tsp salt', '3 tbsp olive oil'],
+      },
+      {
+        id: 's_dressing',
+        name: 'Lemon-Olive Oil Dressing',
+        body: 'Shake in a jar. For salads and raw bowls.',
+        ingredients: ['3 tbsp olive oil', '1 tbsp lemon', '1 tsp salt', '½ tsp pepper', 'Pinch of oregano'],
+      },
+    ],
+  };
+
+  return {
+    version: CURRENT_VERSION,
+    profile: {
+      name: '',
+      currency: '₹',
+      weeklyBudget: 2000,
+      monthlyBudget: 13000,
+      kcalTarget: 2200,
+      proteinTarget: 145,
+    },
+    meals,
+    plan,
+    groceries,
+    prep,
+    prepProgress: {},
+    expenses: [],
+    seededAt: new Date().toISOString(),
+  };
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return defaultState();
+    const obj = JSON.parse(raw);
+
+    // version migration — if older or missing, reset to v2 defaults but preserve expenses + profile tweaks
+    if (!obj.version || obj.version < CURRENT_VERSION) {
+      const fresh = defaultState();
+      if (Array.isArray(obj.expenses)) fresh.expenses = obj.expenses;
+      if (obj.profile && typeof obj.profile === 'object') {
+        // keep currency, but reset budgets to new defaults (which match new doc)
+        if (obj.profile.currency) fresh.profile.currency = obj.profile.currency;
+        if (obj.profile.name) fresh.profile.name = obj.profile.name;
+      }
+      return fresh;
+    }
+    // ensure all keys exist on current-version data
+    const def = defaultState();
+    for (const k of Object.keys(def)) if (obj[k] === undefined) obj[k] = def[k];
+    for (const k of Object.keys(def.profile)) if (obj.profile[k] === undefined) obj.profile[k] = def.profile[k];
+    return obj;
+  } catch (e) {
+    console.error('failed to load state, using defaults', e);
+    return defaultState();
+  }
+}
+
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+  catch (e) { toast('Storage full or blocked'); console.error(e); }
+}
+
+let state = loadState();
+const findMeal = (id) => state.meals.find(m => m.id === id);
+
+const app = $('#app');
+let currentTab = 'today';
+let selectedDay = todayDayKey();
+let shopSegment = 'weekly';
+
+function setTab(tab) {
+  currentTab = tab;
+  $$('.tabbar button').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  render();
+  window.scrollTo({ top: 0, behavior: 'instant' });
+}
+
+function render() {
+  app.innerHTML = '';
+  switch (currentTab) {
+    case 'today': renderToday(); break;
+    case 'plan': renderPlan(); break;
+    case 'prep': renderPrep(); break;
+    case 'shop': renderShop(); break;
+    case 'money': renderMoney(); break;
+  }
+}
+
+// ===================== TODAY =====================
+function renderToday() {
+  const dayKey = todayDayKey();
+  const daySlot = state.plan[dayKey] || {};
+  const dateLabel = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' });
+  let kcal = 0, protein = 0;
+  for (const t of ['breakfast', 'lunch', 'snack', 'dinner']) {
+    const meal = findMeal(daySlot[t]);
+    if (meal) { kcal += meal.kcal || 0; protein += meal.protein || 0; }
+  }
+  const todayExp = state.expenses.filter(e => e.date === todayStr()).reduce((s, e) => s + (e.amount || 0), 0);
+  const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 6);
+  const weekStr = weekAgo.toISOString().slice(0, 10);
+  const weekSpend = state.expenses.filter(e => e.date >= weekStr).reduce((s, e) => s + (e.amount || 0), 0);
+  const kcalTarget = state.profile.kcalTarget || 2200;
+  const proteinTarget = state.profile.proteinTarget || 145;
+  const kcalPct = Math.min(100, (kcal / kcalTarget) * 100);
+  const protPct = Math.min(100, (protein / proteinTarget) * 100);
+
+  const view = document.createElement('div');
+  view.className = 'view';
+  view.innerHTML = `
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">${escapeHtml(dateLabel)}</div>
+        <h1>Today</h1>
+      </div>
+      <div class="actions">
+        <button class="btn-icon" id="quick-add-expense" aria-label="Log expense">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <button class="btn-icon" id="open-settings" aria-label="Settings">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <section class="card">
+      <div class="card-header">
+        <h3>Meals</h3>
+        <span class="meta">${DAY_LABELS[dayKey]}</span>
+      </div>
+      ${['breakfast', 'lunch', 'snack', 'dinner'].map(t => slotHTML(dayKey, t, daySlot[t])).join('')}
+      <p class="meta" style="margin: 10px 0 0; font-size: 12px;">Tap a meal to see ingredients & how to make it.</p>
+    </section>
+
+    <section class="card mt-12">
+      <div class="card-header"><h3>Daily targets</h3></div>
+      <div class="flex between">
+        <span class="meta">Protein</span>
+        <span class="num">${protein}<span class="meta"> / ${proteinTarget}g</span></span>
+      </div>
+      <div class="progress ${protein > proteinTarget * 1.1 ? 'over' : ''}"><div style="width:${protPct}%"></div></div>
+      <div class="flex between" style="margin-top:14px;">
+        <span class="meta">Calories</span>
+        <span class="num">${kcal}<span class="meta"> / ${kcalTarget}</span></span>
+      </div>
+      <div class="progress ${kcal > kcalTarget * 1.1 ? 'over' : ''}"><div style="width:${kcalPct}%"></div></div>
+    </section>
+
+    <section class="stat-grid mt-12">
+      <div class="stat">
+        <div class="label">Today spent</div>
+        <div class="value">${fmtMoney(todayExp, state.profile.currency)}</div>
+      </div>
+      <div class="stat accent">
+        <div class="label">Last 7 days</div>
+        <div class="value">${fmtMoney(weekSpend, state.profile.currency)}</div>
+        <div class="delta">budget ${fmtMoney(state.profile.weeklyBudget, state.profile.currency)}</div>
+      </div>
+    </section>
+  `;
+  app.appendChild(view);
+
+  $('#quick-add-expense').addEventListener('click', () => openExpenseSheet());
+  $('#open-settings').addEventListener('click', openSettingsSheet);
+  $$('.slot').forEach(el => {
+    el.addEventListener('click', () => {
+      const { day, time } = el.dataset;
+      openMealDetailsSheet(day, time);
+    });
+  });
+}
+
+function slotHTML(day, time, mealId) {
+  const meal = findMeal(mealId);
+  if (!meal) {
+    return `<button class="slot empty" data-day="${day}" data-time="${time}">
+      <span class="time-badge">${TIME_EMOJI[time]}</span>
+      <span class="grow">
+        <span class="slot-time">${TIME_LABELS[time]}</span>
+        <div class="slot-name">Tap to assign a meal</div>
+      </span>
+    </button>`;
+  }
+  return `<button class="slot" data-day="${day}" data-time="${time}">
+    <span class="time-badge">${TIME_EMOJI[time]}</span>
+    <span class="grow">
+      <span class="slot-time">${TIME_LABELS[time]}</span>
+      <div class="slot-name">${escapeHtml(meal.name)}</div>
+      <div class="slot-meta">${meal.kcal || 0} kcal · ${meal.protein || 0}g protein</div>
+    </span>
+  </button>`;
+}
+
+// ===================== PLAN =====================
+function renderPlan() {
+  const view = document.createElement('div');
+  view.className = 'view';
+  const day = selectedDay;
+  const daySlot = state.plan[day] || {};
+  let kcal = 0, protein = 0;
+  for (const t of ['breakfast', 'lunch', 'snack', 'dinner']) {
+    const meal = findMeal(daySlot[t]);
+    if (meal) { kcal += meal.kcal || 0; protein += meal.protein || 0; }
+  }
+
+  view.innerHTML = `
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">Weekly plan</div>
+        <h1>Plan</h1>
+      </div>
+      <div class="actions">
+        <button class="btn btn-secondary" id="manage-meals">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+          Meals
+        </button>
+      </div>
+    </header>
+
+    <div class="day-chips" id="day-chips">
+      ${DAYS.map(d => `<button class="day-chip ${d === day ? 'active' : ''}" data-day="${d}">${DAY_LABELS[d]}</button>`).join('')}
+    </div>
+
+    <section class="card">
+      <div class="card-header">
+        <h3>${day.charAt(0).toUpperCase() + day.slice(1)}</h3>
+        <span class="meta">${kcal} kcal · ${protein}g P</span>
+      </div>
+      ${['breakfast', 'lunch', 'snack', 'dinner'].map(t => slotHTML(day, t, daySlot[t])).join('')}
+    </section>
+
+    <p class="meta mt-18" style="text-align:center; padding: 0 16px;">
+      Tap a meal to view details. Use <strong>Meals</strong> to add or edit recipes.
+    </p>
+  `;
+  app.appendChild(view);
+
+  $$('.day-chip').forEach(b => b.addEventListener('click', () => {
+    selectedDay = b.dataset.day;
+    render();
+  }));
+  $$('.slot').forEach(el => {
+    el.addEventListener('click', () => openMealDetailsSheet(el.dataset.day, el.dataset.time));
+  });
+  $('#manage-meals').addEventListener('click', openMealLibrarySheet);
+}
+
+// ===================== PREP =====================
+function renderPrep() {
+  const view = document.createElement('div');
+  view.className = 'view';
+  const prep = state.prep || { timeline: [], recipes: [], sauces: [] };
+  const done = (state.prepProgress) || {};
+  const doneCount = prep.timeline.filter((_, i) => done[i]).length;
+
+  view.innerHTML = `
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">Sunday cook · ~100 min</div>
+        <h1>Prep</h1>
+      </div>
+    </header>
+
+    <section class="card">
+      <div class="card-header">
+        <h3>Timeline</h3>
+        <span class="meta">${doneCount} / ${prep.timeline.length}</span>
+      </div>
+      ${prep.timeline.map((t, i) => `
+        <button class="tl-item ${done[i] ? 'done' : ''}" data-i="${i}">
+          <span class="check ${done[i] ? 'on' : ''}">
+            ${done[i] ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg>' : ''}
+          </span>
+          <span class="grow">
+            <span class="tl-time">${escapeHtml(t.time)}</span>
+            <span class="tl-action">${escapeHtml(t.action)}</span>
+            <span class="tl-why">${escapeHtml(t.why)}</span>
+          </span>
+        </button>
+      `).join('')}
+      ${doneCount > 0 ? `<div class="btn-row mt-12"><button class="btn btn-secondary btn-block" id="reset-prep">Reset timeline checks</button></div>` : ''}
+    </section>
+
+    <h4 class="section-label">Recipes — Sunday cook</h4>
+    ${prep.recipes.map(r => `
+      <div class="recipe-card" data-id="${r.id}">
+        <button class="recipe-toggle">
+          <span>
+            <h3>${escapeHtml(r.name)}</h3>
+            ${r.servings ? `<div class="meta" style="margin-top:2px;">${escapeHtml(r.servings)}</div>` : ''}
+          </span>
+          <span class="chev">▾</span>
+        </button>
+        <div class="recipe-body">
+          <h5>Ingredients</h5>
+          <ul>${r.ingredients.map(i => `<li>${escapeHtml(i)}</li>`).join('')}</ul>
+          <h5 style="margin-top:14px;">Method</h5>
+          <ol>${r.steps.map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ol>
+          ${r.tip ? `<div class="recipe-tip"><strong>Tip · </strong>${escapeHtml(r.tip)}</div>` : ''}
+        </div>
+      </div>
+    `).join('')}
+
+    <h4 class="section-label">Sauces & Spice Blends — no-cook</h4>
+    ${prep.sauces.map(s => `
+      <div class="recipe-card" data-id="${s.id}">
+        <button class="recipe-toggle">
+          <span><h3>${escapeHtml(s.name)}</h3></span>
+          <span class="chev">▾</span>
+        </button>
+        <div class="recipe-body">
+          <p class="meta" style="margin: 8px 0 0;">${escapeHtml(s.body)}</p>
+          <h5 style="margin-top:14px;">Ingredients</h5>
+          <ul>${s.ingredients.map(i => `<li>${escapeHtml(i)}</li>`).join('')}</ul>
+        </div>
+      </div>
+    `).join('')}
+
+    <p class="meta mt-18" style="text-align:center;">
+      Equipment list is in <strong>Shop → Kitchen</strong>. Recipes can be edited via <strong>Settings → Export</strong>, edit the JSON, then <strong>Import</strong>.
+    </p>
+  `;
+  app.appendChild(view);
+
+  $$('.tl-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const i = parseInt(el.dataset.i);
+      if (!state.prepProgress) state.prepProgress = {};
+      state.prepProgress[i] = !state.prepProgress[i];
+      saveState();
+      render();
+    });
+  });
+  const resetBtn = $('#reset-prep');
+  if (resetBtn) resetBtn.addEventListener('click', () => {
+    state.prepProgress = {};
+    saveState();
+    render();
+    toast('Timeline reset');
+  });
+  $$('.recipe-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.closest('.recipe-card').classList.toggle('open');
+    });
+  });
+}
+
+// ===================== SHOP =====================
+function renderShop() {
+  const view = document.createElement('div');
+  view.className = 'view';
+  const items = state.groceries.filter(g => (g.kind || 'weekly') === shopSegment);
+  const byCat = {};
+  for (const g of items) (byCat[g.cat] ||= []).push(g);
+  const categories = Object.keys(byCat).sort();
+
+  const total = items.reduce((s, g) => s + (g.bought ? 0 : (g.price || 0)), 0);
+  const totalAll = items.reduce((s, g) => s + (g.price || 0), 0);
+  const remaining = items.filter(g => !g.bought).length;
+
+  let topRight, subline;
+  if (shopSegment === 'weekly') {
+    const budget = state.profile.weeklyBudget;
+    topRight = fmtMoney(budget, state.profile.currency);
+    subline = total > budget ? 'over by ' + fmtMoney(total - budget, state.profile.currency) : 'under by ' + fmtMoney(budget - total, state.profile.currency);
+  } else if (shopSegment === 'pantry') {
+    topRight = fmtMoney(totalAll, state.profile.currency);
+    subline = 'one-time setup · lasts 1–3 months';
+  } else {
+    topRight = fmtMoney(totalAll, state.profile.currency);
+    subline = 'one-time kitchen setup';
+  }
+
+  const titleByKind = { weekly: 'Weekly groceries', pantry: 'Pantry setup', kitchen: 'Kitchen setup' };
+  const labelByKind = { weekly: 'Weekly budget', pantry: 'Setup total', kitchen: 'Setup total' };
+
+  view.innerHTML = `
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">Shopping</div>
+        <h1>${titleByKind[shopSegment]}</h1>
+      </div>
+      <div class="actions">
+        <button class="btn-icon" id="add-grocery" aria-label="Add item">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="segmented">
+      <button class="seg ${shopSegment === 'weekly' ? 'active' : ''}" data-seg="weekly">Weekly</button>
+      <button class="seg ${shopSegment === 'pantry' ? 'active' : ''}" data-seg="pantry">Pantry</button>
+      <button class="seg ${shopSegment === 'kitchen' ? 'active' : ''}" data-seg="kitchen">Kitchen</button>
+    </div>
+
+    <section class="stat-grid mt-12">
+      <div class="stat">
+        <div class="label">Left to buy</div>
+        <div class="value">${fmtMoney(total, state.profile.currency)}</div>
+        <div class="delta">${remaining} of ${items.length} items</div>
+      </div>
+      <div class="stat accent">
+        <div class="label">${labelByKind[shopSegment]}</div>
+        <div class="value">${topRight}</div>
+        <div class="delta">${subline}</div>
+      </div>
+    </section>
+
+    ${shopSegment === 'kitchen' ? `<p class="meta" style="background:rgba(101,128,63,0.10);padding:10px 12px;border-radius:10px;margin:12px 0 0;color:var(--coriander-deep);font-weight:500;">Starting your kitchen new? This is your one-time setup. Once bought, uncheck this list and ignore — you won't touch it again for years.</p>` : ''}
+    ${shopSegment === 'pantry' ? `<p class="meta" style="background:rgba(217,119,6,0.10);padding:10px 12px;border-radius:10px;margin:12px 0 0;color:var(--turmeric-deep);font-weight:500;">Buy these once. Spices last 3 months, oils 1–2 months, almonds re-buy weekly. Spread the cost mentally.</p>` : ''}
+
+    ${categories.length === 0 ? `<div class="empty-state"><span class="emoji">📋</span>No items yet. Tap + to add one.</div>` : categories.map(cat => `
+      <h4 class="section-label">${cat}</h4>
+      <section class="card">
+        ${byCat[cat].map(g => groceryRowHTML(g)).join('')}
+      </section>
+    `).join('')}
+
+    ${items.length > 0 ? `<div class="btn-row mt-18">
+      <button class="btn btn-secondary btn-block" id="uncheck-all">Reset checkmarks (${shopSegment})</button>
+    </div>` : ''}
+    <p class="meta mt-12" style="text-align:center;">Tap a row to mark "bought". Use ✏️ to edit price, quantity, or notes.</p>
+  `;
+  app.appendChild(view);
+
+  $$('.seg').forEach(b => b.addEventListener('click', () => {
+    shopSegment = b.dataset.seg;
+    render();
+  }));
+  $$('.grocery-row').forEach(row => {
+    row.addEventListener('click', (e) => {
+      if (e.target.closest('.row-edit')) return;
+      const id = row.dataset.id;
+      const item = state.groceries.find(g => g.id === id);
+      if (item) {
+        item.bought = !item.bought;
+        saveState();
+        render();
+      }
+    });
+    const editBtn = row.querySelector('.row-edit');
+    if (editBtn) editBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openGrocerySheet(row.dataset.id);
+    });
+  });
+  $('#add-grocery').addEventListener('click', () => openGrocerySheet(null, shopSegment));
+  const reset = $('#uncheck-all');
+  if (reset) reset.addEventListener('click', () => {
+    state.groceries.forEach(g => { if ((g.kind || 'weekly') === shopSegment) g.bought = false; });
+    saveState(); render();
+    toast('Unchecked');
+  });
+}
+
+function groceryRowHTML(g) {
+  return `<div class="list-item grocery-row ${g.bought ? 'bought' : ''}" data-id="${g.id}">
+    <span class="check ${g.bought ? 'on' : ''}" aria-hidden="true">
+      ${g.bought ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg>' : ''}
+    </span>
+    <span class="grow">
+      <span class="title">${escapeHtml(g.name)}</span>
+      <span class="sub">${escapeHtml(g.qty)}${g.note ? ' · ' + escapeHtml(g.note) : ''}</span>
+    </span>
+    <span class="right">${fmtMoney(g.price, state.profile.currency)}</span>
+    <button class="btn-ghost row-edit" aria-label="Edit ${escapeHtml(g.name)}">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4Z"/></svg>
+    </button>
+  </div>`;
+}
+
+// ===================== MONEY =====================
+function renderMoney() {
+  const view = document.createElement('div');
+  view.className = 'view';
+  const now = new Date();
+  const monthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
+  const monthExp = state.expenses.filter(e => e.date >= monthStart);
+  const monthSpend = monthExp.reduce((s, e) => s + (e.amount || 0), 0);
+  const monthPct = state.profile.monthlyBudget ? Math.min(100, (monthSpend / state.profile.monthlyBudget) * 100) : 0;
+  const remainingDays = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate() - now.getDate();
+  const dailyBudgetLeft = remainingDays > 0 ? (state.profile.monthlyBudget - monthSpend) / remainingDays : 0;
+
+  const byCat = {};
+  for (const e of monthExp) byCat[e.category] = (byCat[e.category] || 0) + e.amount;
+
+  const CAT_INFO = {
+    groceries:  { label: 'Groceries',  color: 'var(--coriander)' },
+    eating_out: { label: 'Eating out', color: 'var(--turmeric)' },
+    pantry:     { label: 'Pantry / setup', color: 'var(--cardamom)' },
+    other:      { label: 'Other',      color: 'var(--ink-3)' },
+  };
+
+  const days7 = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const k = d.toISOString().slice(0, 10);
+    const sum = state.expenses.filter(e => e.date === k).reduce((s, e) => s + e.amount, 0);
+    days7.push({ key: k, label: d.toLocaleDateString('en-IN', { weekday: 'short' }).slice(0, 1), sum });
+  }
+  const max7 = Math.max(1, ...days7.map(d => d.sum));
+  const recent = [...state.expenses].sort((a, b) => (b.date + b.id).localeCompare(a.date + a.id)).slice(0, 30);
+
+  view.innerHTML = `
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">${now.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })}</div>
+        <h1>Money</h1>
+      </div>
+      <div class="actions">
+        <button class="btn-icon" id="add-expense" aria-label="Log expense">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <section class="card">
+      <div class="flex between">
+        <div>
+          <div class="eyebrow" style="font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:var(--ink-3);font-weight:600;">This month</div>
+          <div class="num" style="font-size:30px;">${fmtMoney(monthSpend, state.profile.currency)}</div>
+        </div>
+        <div class="text-right">
+          <div class="meta">of ${fmtMoney(state.profile.monthlyBudget, state.profile.currency)}</div>
+          <div class="meta">≈ ${fmtMoney(dailyBudgetLeft, state.profile.currency)}/day left</div>
+        </div>
+      </div>
+      <div class="progress ${monthSpend > state.profile.monthlyBudget ? 'over' : ''} mt-12"><div style="width:${monthPct}%"></div></div>
+    </section>
+
+    <section class="card mt-12">
+      <div class="card-header">
+        <h3>Last 7 days</h3>
+        <span class="meta">${fmtMoney(days7.reduce((s, d) => s + d.sum, 0), state.profile.currency)}</span>
+      </div>
+      <div class="bars">
+        ${days7.map(d => `
+          <div class="bar-col" title="${d.key}: ${fmtMoney(d.sum, state.profile.currency)}">
+            <div class="bar ${d.sum === 0 ? 'zero' : ''}" style="height:${(d.sum / max7) * 76 + 2}px"></div>
+            <span class="bar-label">${d.label}</span>
+          </div>
+        `).join('')}
+      </div>
+    </section>
+
+    ${Object.keys(byCat).length ? `
+      <section class="card mt-12">
+        <div class="card-header"><h3>By category</h3></div>
+        ${Object.entries(byCat).sort((a, b) => b[1] - a[1]).map(([cat, amt]) => {
+          const info = CAT_INFO[cat] || { label: cat, color: 'var(--ink-3)' };
+          const pct = monthSpend ? Math.round((amt / monthSpend) * 100) : 0;
+          return `<div class="list-item">
+            <span class="grow"><span class="title"><span class="dot" style="background:${info.color}"></span>${info.label}</span><span class="sub">${pct}%</span></span>
+            <span class="right">${fmtMoney(amt, state.profile.currency)}</span>
+          </div>`;
+        }).join('')}
+      </section>
+    ` : ''}
+
+    <h4 class="section-label">Recent</h4>
+    <section class="card">
+      ${recent.length === 0 ? `<div class="empty-state"><span class="emoji">💸</span>No expenses yet.<br/>Tap + to log one.</div>` : recent.map(e => {
+        const info = CAT_INFO[e.category] || { label: e.category };
+        const title = e.note ? e.note : info.label;
+        const sub = e.note ? `${e.date} · ${info.label}` : e.date;
+        return `<div class="list-item expense-row" data-id="${e.id}">
+          <span class="grow">
+            <span class="title">${escapeHtml(title)}</span>
+            <span class="sub">${escapeHtml(sub)}</span>
+          </span>
+          <span class="right">${fmtMoney(e.amount, state.profile.currency)}</span>
+          <button class="btn-ghost row-edit" aria-label="Edit">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4Z"/></svg>
+          </button>
+        </div>`;
+      }).join('')}
+    </section>
+  `;
+  app.appendChild(view);
+
+  $('#add-expense').addEventListener('click', () => openExpenseSheet());
+  $$('.expense-row .row-edit').forEach(b => b.addEventListener('click', (e) => {
+    e.stopPropagation();
+    openExpenseSheet(b.closest('.expense-row').dataset.id);
+  }));
+}
+
+// ===================== SHEETS =====================
+function openSheet(html) {
+  const sheet = $('#sheet');
+  const bd = $('#sheet-backdrop');
+  sheet.innerHTML = `<div class="sheet-handle"></div>${html}`;
+  bd.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  sheet.scrollTop = 0;
+}
+function closeSheet() {
+  $('#sheet-backdrop').classList.remove('open');
+  document.body.style.overflow = '';
+}
+$('#sheet-backdrop').addEventListener('click', (e) => {
+  if (e.target.id === 'sheet-backdrop') closeSheet();
+});
+
+// ---- meal details (ingredients + how to make it) ----
+function openMealDetailsSheet(day, time) {
+  const mealId = state.plan[day] && state.plan[day][time];
+  const meal = findMeal(mealId);
+  if (!meal) { openMealPickerSheet(day, time); return; }
+  const html = `
+    <div class="eyebrow" style="font-size:11px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-3);font-weight:600;">${TIME_LABELS[time]} · ${DAY_LABELS[day]}</div>
+    <h2 style="margin-top:4px;">${escapeHtml(meal.name)}</h2>
+    <div class="flex" style="gap:8px;margin-bottom:14px;">
+      <span class="pill turmeric">${meal.kcal || 0} kcal</span>
+      <span class="pill coriander">${meal.protein || 0}g protein</span>
+    </div>
+    ${meal.ingredients && meal.ingredients.length ? `
+      <h5>Ingredients</h5>
+      <ul style="padding-left:22px;margin:8px 0 18px;">
+        ${meal.ingredients.map(i => `<li style="margin-bottom:4px;">${escapeHtml(i)}</li>`).join('')}
+      </ul>
+    ` : ''}
+    ${meal.notes ? `
+      <h5>How to make it</h5>
+      <p style="margin:8px 0 18px;line-height:1.55;">${escapeHtml(meal.notes)}</p>
+    ` : ''}
+    <div class="btn-row">
+      <button class="btn btn-primary" id="meal-change" style="flex:1;">Change meal</button>
+      <button class="btn btn-secondary" id="meal-edit">Edit recipe</button>
+    </div>
+  `;
+  openSheet(html);
+  $('#meal-change').addEventListener('click', () => { closeSheet(); openMealPickerSheet(day, time); });
+  $('#meal-edit').addEventListener('click', () => { closeSheet(); openMealEditSheet(meal.id); });
+}
+
+// ---- meal picker ----
+function openMealPickerSheet(day, time) {
+  const candidates = state.meals.filter(m => m.time === time);
+  const currentId = state.plan[day] && state.plan[day][time];
+  const html = `
+    <h2>${TIME_LABELS[time]} · ${DAY_LABELS[day]}</h2>
+    <div class="btn-row" style="margin-bottom:14px;">
+      <button class="btn btn-secondary" id="clear-slot">Clear slot</button>
+      <button class="btn btn-secondary" id="new-meal-here">+ New meal</button>
+    </div>
+    <div>
+      ${candidates.length === 0 ? '<p class="meta">No meals saved for this time slot. Add one.</p>' : candidates.map(m => `
+        <button class="slot meal-pick" data-id="${m.id}" style="margin-bottom:8px;">
+          <span class="time-badge">${TIME_EMOJI[time]}</span>
+          <span class="grow">
+            <span class="slot-name">${escapeHtml(m.name)} ${m.id === currentId ? '✓' : ''}</span>
+            <span class="slot-meta">${m.kcal} kcal · ${m.protein}g protein</span>
+          </span>
+        </button>
+      `).join('')}
+    </div>
+  `;
+  openSheet(html);
+  $('#clear-slot').addEventListener('click', () => {
+    if (!state.plan[day]) state.plan[day] = {};
+    state.plan[day][time] = null;
+    saveState(); closeSheet(); render();
+  });
+  $('#new-meal-here').addEventListener('click', () => {
+    openMealEditSheet(null, { time, assignTo: { day, time } });
+  });
+  $$('.meal-pick').forEach(b => b.addEventListener('click', () => {
+    if (!state.plan[day]) state.plan[day] = {};
+    state.plan[day][time] = b.dataset.id;
+    saveState(); closeSheet(); render(); toast('Slot updated');
+  }));
+}
+
+// ---- meal library ----
+function openMealLibrarySheet() {
+  const byTime = { breakfast: [], lunch: [], snack: [], dinner: [] };
+  for (const m of state.meals) (byTime[m.time] ||= []).push(m);
+
+  const html = `
+    <h2>Meals library</h2>
+    <button class="btn btn-primary btn-block" id="add-meal" style="margin-bottom:14px;">+ New meal</button>
+    ${['breakfast', 'lunch', 'snack', 'dinner'].map(t => byTime[t] && byTime[t].length ? `
+      <h4 class="section-label">${TIME_LABELS[t]}</h4>
+      ${byTime[t].map(m => `
+        <div class="list-item meal-row" data-id="${m.id}">
+          <span class="grow">
+            <span class="title">${escapeHtml(m.name)}</span>
+            <span class="sub">${m.kcal} kcal · ${m.protein}g protein</span>
+          </span>
+          <button class="btn-ghost row-edit" data-id="${m.id}" aria-label="Edit">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4Z"/></svg>
+          </button>
+        </div>
+      `).join('')}
+    ` : '').join('')}
+  `;
+  openSheet(html);
+  $('#add-meal').addEventListener('click', () => openMealEditSheet(null));
+  $$('.meal-row .row-edit').forEach(b => b.addEventListener('click', () => openMealEditSheet(b.dataset.id)));
+}
+
+function openMealEditSheet(id, opts = {}) {
+  const m = id ? findMeal(id) : { id: null, name: '', time: opts.time || 'lunch', kcal: 0, protein: 0, ingredients: [], notes: '' };
+  const html = `
+    <h2>${id ? 'Edit meal' : 'New meal'}</h2>
+    <div class="field">
+      <label>Name</label>
+      <input type="text" id="m-name" value="${escapeHtml(m.name)}" placeholder="e.g. Chicken rice bowl" />
+    </div>
+    <div class="field">
+      <label>Time slot</label>
+      <select id="m-time">
+        ${['breakfast', 'lunch', 'snack', 'dinner'].map(t => `<option value="${t}" ${m.time === t ? 'selected' : ''}>${TIME_LABELS[t]}</option>`).join('')}
+      </select>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Calories</label>
+        <input type="number" id="m-kcal" value="${m.kcal || 0}" inputmode="numeric" />
+      </div>
+      <div class="field">
+        <label>Protein (g)</label>
+        <input type="number" id="m-prot" value="${m.protein || 0}" inputmode="numeric" />
+      </div>
+    </div>
+    <div class="field">
+      <label>Ingredients (one per line)</label>
+      <textarea id="m-ing" rows="6">${escapeHtml((m.ingredients || []).join('\n'))}</textarea>
+    </div>
+    <div class="field">
+      <label>How to make it (assembly notes)</label>
+      <textarea id="m-notes" rows="5">${escapeHtml(m.notes || '')}</textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="m-save" style="flex:1;">Save</button>
+      ${id ? '<button class="btn btn-danger" id="m-del">Delete</button>' : ''}
+    </div>
+  `;
+  openSheet(html);
+  $('#m-save').addEventListener('click', () => {
+    const name = $('#m-name').value.trim();
+    if (!name) { toast('Name is required'); return; }
+    const meal = {
+      id: m.id || ('m_' + uid()),
+      name,
+      time: $('#m-time').value,
+      kcal: parseInt($('#m-kcal').value, 10) || 0,
+      protein: parseInt($('#m-prot').value, 10) || 0,
+      ingredients: $('#m-ing').value.split('\n').map(s => s.trim()).filter(Boolean),
+      notes: $('#m-notes').value.trim(),
+    };
+    if (m.id) state.meals[state.meals.findIndex(x => x.id === m.id)] = meal;
+    else state.meals.push(meal);
+    if (opts.assignTo) {
+      const { day, time } = opts.assignTo;
+      if (!state.plan[day]) state.plan[day] = {};
+      state.plan[day][time] = meal.id;
+    }
+    saveState(); closeSheet(); toast('Saved'); render();
+  });
+  if (id) $('#m-del').addEventListener('click', () => {
+    if (!confirm(`Delete "${m.name}"?`)) return;
+    for (const d of DAYS) for (const t of ['breakfast', 'lunch', 'snack', 'dinner']) {
+      if (state.plan[d] && state.plan[d][t] === m.id) state.plan[d][t] = null;
+    }
+    state.meals = state.meals.filter(x => x.id !== m.id);
+    saveState(); closeSheet(); toast('Deleted'); render();
+  });
+}
+
+// ---- grocery edit ----
+function openGrocerySheet(id, defaultKind = 'weekly') {
+  const g = id
+    ? state.groceries.find(x => x.id === id)
+    : { id: null, name: '', qty: '', price: 0, cat: 'Other', kind: defaultKind, note: '', bought: false };
+
+  const categoryOptions = {
+    weekly:  ['Protein', 'Dairy', 'Grain', 'Legume', 'Veg', 'Fruit', 'Other'],
+    pantry:  ['Oil', 'Spice', 'Other'],
+    kitchen: ['Cookware', 'Storage', 'Tool', 'Other'],
+  };
+  const cats = categoryOptions[g.kind] || categoryOptions.weekly;
+
+  const html = `
+    <h2>${id ? 'Edit item' : 'New item'}</h2>
+    <div class="field">
+      <label>List</label>
+      <select id="g-kind">
+        <option value="weekly"  ${g.kind === 'weekly'  ? 'selected' : ''}>Weekly groceries</option>
+        <option value="pantry"  ${g.kind === 'pantry'  ? 'selected' : ''}>Pantry setup</option>
+        <option value="kitchen" ${g.kind === 'kitchen' ? 'selected' : ''}>Kitchen setup</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Name</label>
+      <input type="text" id="g-name" value="${escapeHtml(g.name)}" placeholder="e.g. Tomatoes" />
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Quantity</label>
+        <input type="text" id="g-qty" value="${escapeHtml(g.qty)}" placeholder="500g, 2 pcs..." />
+      </div>
+      <div class="field">
+        <label>Price (${escapeHtml(state.profile.currency)})</label>
+        <input type="number" id="g-price" value="${g.price || 0}" inputmode="numeric" />
+      </div>
+    </div>
+    <div class="field">
+      <label>Category</label>
+      <select id="g-cat">
+        ${cats.map(c => `<option value="${c}" ${g.cat === c ? 'selected' : ''}>${c}</option>`).join('')}
+      </select>
+    </div>
+    <div class="field">
+      <label>Note (brand / where / tips)</label>
+      <input type="text" id="g-note" value="${escapeHtml(g.note || '')}" placeholder="optional" />
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="g-save" style="flex:1;">Save</button>
+      ${id ? '<button class="btn btn-danger" id="g-del">Delete</button>' : ''}
+    </div>
+  `;
+  openSheet(html);
+
+  // when list changes, re-render the category options
+  $('#g-kind').addEventListener('change', (e) => {
+    const newKind = e.target.value;
+    const newCats = categoryOptions[newKind] || categoryOptions.weekly;
+    const sel = $('#g-cat');
+    sel.innerHTML = newCats.map(c => `<option value="${c}">${c}</option>`).join('');
+  });
+
+  $('#g-save').addEventListener('click', () => {
+    const name = $('#g-name').value.trim();
+    if (!name) { toast('Name required'); return; }
+    const item = {
+      id: g.id || ('g_' + uid()),
+      name,
+      qty: $('#g-qty').value.trim(),
+      price: parseFloat($('#g-price').value) || 0,
+      cat: $('#g-cat').value,
+      kind: $('#g-kind').value,
+      note: $('#g-note').value.trim(),
+      bought: g.bought || false,
+    };
+    if (g.id) state.groceries[state.groceries.findIndex(x => x.id === g.id)] = item;
+    else state.groceries.push(item);
+    // jump to the segment the new item went into
+    shopSegment = item.kind;
+    saveState(); closeSheet(); render(); toast('Saved');
+  });
+  if (id) $('#g-del').addEventListener('click', () => {
+    if (!confirm(`Delete "${g.name}"?`)) return;
+    state.groceries = state.groceries.filter(x => x.id !== g.id);
+    saveState(); closeSheet(); render(); toast('Deleted');
+  });
+}
+
+// ---- expense edit ----
+function openExpenseSheet(id) {
+  const e = id ? state.expenses.find(x => x.id === id) : { id: null, date: todayStr(), amount: 0, category: 'eating_out', note: '' };
+  const html = `
+    <h2>${id ? 'Edit expense' : 'Log expense'}</h2>
+    <div class="field-row">
+      <div class="field">
+        <label>Amount (${escapeHtml(state.profile.currency)})</label>
+        <input type="number" id="e-amt" value="${e.amount || ''}" inputmode="numeric" placeholder="0" />
+      </div>
+      <div class="field">
+        <label>Date</label>
+        <input type="date" id="e-date" value="${e.date}" />
+      </div>
+    </div>
+    <div class="field">
+      <label>Category</label>
+      <select id="e-cat">
+        <option value="groceries"  ${e.category === 'groceries'  ? 'selected' : ''}>Groceries</option>
+        <option value="eating_out" ${e.category === 'eating_out' ? 'selected' : ''}>Eating out</option>
+        <option value="pantry"     ${e.category === 'pantry'     ? 'selected' : ''}>Pantry / setup</option>
+        <option value="other"      ${e.category === 'other'      ? 'selected' : ''}>Other</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Note (optional)</label>
+      <input type="text" id="e-note" value="${escapeHtml(e.note)}" placeholder="Swiggy, Blinkit, fish market..." />
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="e-save" style="flex:1;">Save</button>
+      ${id ? '<button class="btn btn-danger" id="e-del">Delete</button>' : ''}
+    </div>
+  `;
+  openSheet(html);
+  setTimeout(() => $('#e-amt')?.focus(), 100);
+  $('#e-save').addEventListener('click', () => {
+    const amount = parseFloat($('#e-amt').value);
+    if (!amount || amount <= 0) { toast('Enter an amount'); return; }
+    const exp = {
+      id: e.id || ('e_' + uid()),
+      date: $('#e-date').value || todayStr(),
+      amount,
+      category: $('#e-cat').value,
+      note: $('#e-note').value.trim(),
+    };
+    if (e.id) state.expenses[state.expenses.findIndex(x => x.id === e.id)] = exp;
+    else state.expenses.push(exp);
+    saveState(); closeSheet(); render(); toast('Saved');
+  });
+  if (id) $('#e-del').addEventListener('click', () => {
+    if (!confirm('Delete this expense?')) return;
+    state.expenses = state.expenses.filter(x => x.id !== e.id);
+    saveState(); closeSheet(); render(); toast('Deleted');
+  });
+}
+
+// ---- settings sheet (replaces More tab) ----
+function openSettingsSheet() {
+  const p = state.profile;
+  const html = `
+    <h2>Settings</h2>
+    <h5 style="margin-top:8px;">Profile & targets</h5>
+    <div class="field-row" style="margin-top:8px;">
+      <div class="field">
+        <label>Weekly grocery budget</label>
+        <input type="number" id="p-weekly" value="${p.weeklyBudget}" min="0" inputmode="numeric" />
+      </div>
+      <div class="field">
+        <label>Monthly food budget</label>
+        <input type="number" id="p-monthly" value="${p.monthlyBudget}" min="0" inputmode="numeric" />
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Daily kcal target</label>
+        <input type="number" id="p-kcal" value="${p.kcalTarget}" min="0" inputmode="numeric" />
+      </div>
+      <div class="field">
+        <label>Daily protein (g)</label>
+        <input type="number" id="p-prot" value="${p.proteinTarget}" min="0" inputmode="numeric" />
+      </div>
+    </div>
+    <div class="field">
+      <label>Currency symbol</label>
+      <input type="text" id="p-cur" value="${escapeHtml(p.currency)}" maxlength="3" />
+    </div>
+    <button class="btn btn-primary btn-block" id="save-profile">Save</button>
+
+    <h5 style="margin-top:20px;">Library</h5>
+    <div class="list-item">
+      <span class="grow"><span class="title">Manage meal templates</span><span class="sub">${state.meals.length} meals</span></span>
+      <button class="btn btn-secondary" id="open-meals">Open</button>
+    </div>
+
+    <h5 style="margin-top:20px;">Data</h5>
+    <div class="list-item">
+      <span class="grow"><span class="title">Export backup</span><span class="sub">Download JSON</span></span>
+      <button class="btn btn-secondary" id="s-export">Export</button>
+    </div>
+    <div class="list-item">
+      <span class="grow"><span class="title">Import backup</span><span class="sub">Restore from JSON</span></span>
+      <button class="btn btn-secondary" id="s-import">Import</button>
+    </div>
+    <div class="list-item">
+      <span class="grow"><span class="title">Reset to defaults</span><span class="sub">Wipes all your data</span></span>
+      <button class="btn btn-danger" id="s-reset">Reset</button>
+    </div>
+
+    <h5 style="margin-top:20px;">Install</h5>
+    <p class="meta" style="margin: 0 0 10px;">
+      <strong>Android Chrome:</strong> ⋮ menu → <strong>Install app</strong> or <strong>Add to Home screen</strong>.<br/>
+      <strong>iPhone Safari:</strong> Share → <strong>Add to Home Screen</strong>.
+    </p>
+    <button class="btn btn-primary btn-block hidden" id="install-btn">Install MealMate</button>
+
+    <p class="meta" style="text-align:center;margin-top:20px;">MealMate · v1.1 · all data stays on this device</p>
+  `;
+  openSheet(html);
+
+  $('#save-profile').addEventListener('click', () => {
+    state.profile.weeklyBudget  = parseInt($('#p-weekly').value, 10) || 0;
+    state.profile.monthlyBudget = parseInt($('#p-monthly').value, 10) || 0;
+    state.profile.kcalTarget    = parseInt($('#p-kcal').value, 10) || 0;
+    state.profile.proteinTarget = parseInt($('#p-prot').value, 10) || 0;
+    state.profile.currency      = $('#p-cur').value.trim() || '₹';
+    saveState(); toast('Saved'); closeSheet(); render();
+  });
+  $('#open-meals').addEventListener('click', () => { closeSheet(); openMealLibrarySheet(); });
+  $('#s-export').addEventListener('click', exportData);
+  $('#s-import').addEventListener('click', importData);
+  $('#s-reset').addEventListener('click', () => {
+    if (confirm('Wipe all data and restore defaults?')) {
+      state = defaultState(); saveState(); closeSheet(); render(); toast('Reset to defaults');
+    }
+  });
+  if (deferredInstall) {
+    const btn = $('#install-btn');
+    btn.classList.remove('hidden');
+    btn.addEventListener('click', async () => {
+      deferredInstall.prompt();
+      const { outcome } = await deferredInstall.userChoice;
+      if (outcome === 'accepted') toast('Installing…');
+      deferredInstall = null;
+    });
+  }
+}
+
+// ---- export / import ----
+function exportData() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `mealmate-backup-${todayStr()}.json`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast('Backup downloaded');
+}
+
+function importData() {
+  const inp = document.createElement('input');
+  inp.type = 'file';
+  inp.accept = 'application/json,.json';
+  inp.addEventListener('change', () => {
+    const f = inp.files[0]; if (!f) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const obj = JSON.parse(reader.result);
+        if (!obj || typeof obj !== 'object' || !obj.meals || !obj.plan) throw new Error('Not a MealMate backup');
+        if (!confirm('Replace current data with this backup?')) return;
+        state = obj;
+        saveState(); closeSheet(); render(); toast('Imported');
+      } catch (err) {
+        alert('Could not import: ' + err.message);
+      }
+    };
+    reader.readAsText(f);
+  });
+  inp.click();
+}
+
+// ---- PWA install ----
+let deferredInstall = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstall = e;
+});
+window.addEventListener('appinstalled', () => {
+  deferredInstall = null;
+  toast('Installed — open from your home screen');
+});
+
+// ---- service worker ----
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(err => console.warn('SW failed:', err));
+  });
+}
+
+// ---- boot ----
+$$('.tabbar button').forEach(b => b.addEventListener('click', () => setTab(b.dataset.tab)));
+setTab('today');
+window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSheet(); });
+</script>
+</body>
+</html>
