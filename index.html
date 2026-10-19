@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f5f5f7">
+<title>Muscle Meals | Eat for muscle. Spend ₹333 a day.</title>
+<meta name="description" content="A Kerala-friendly 7-day meal plan, prep routine and grocery tracker built around a ₹10,000 monthly budget.">
+<meta property="og:title" content="Muscle Meals"><meta property="og:description" content="Eat for muscle. Spend ₹333 a day.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🥗%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/app.css">
+<link rel="stylesheet" href="css/site.css">
+</head>
+<body>
+<header class="mm-nav"><b>Muscle Meals</b><a href="#app">Open planner</a></header>
+<section class="mm-hero"><div class="mm-hero-in">
+  <h1>Eat for muscle.<br><span>Spend ₹333 a day.</span></h1>
+  <p>A Kerala-friendly 7-day meal plan, prep routine and grocery tracker, built around ₹10,000 a month.</p>
+  <div class="mm-cta"><a href="#app">Plan my week</a><a href="#story">See how it works</a></div>
+</div></section>
+<section class="mm-story" id="story"><div class="mm-stage">
+  <div class="ring"><svg viewBox="0 0 200 200" aria-hidden="true"><circle class="t" cx="100" cy="100" r="90"/><circle class="v" cx="100" cy="100" r="90"/></svg><div class="num"><span id="bignum">0</span><small id="numunit"></small></div></div>
+  <div class="chs">
+    <div class="ch on" data-n="2700" data-unit="kcal a day"><h2>Know what you're eating.</h2><p>Four meals a day, built for 2,600–2,800 kcal and 130–160 g of protein.</p></div>
+    <div class="ch" data-n="2" data-unit="prep sessions a week"><h2>Cook twice. Eat all week.</h2><p>A Sunday prep and a Wednesday top-up keep every meal minutes from the plate.</p></div>
+    <div class="ch" data-n="10000" data-unit="₹ a month"><h2>Stay under budget.</h2><p>Edit prices, log what you buy, and watch the month fill up against ₹10,000.</p></div>
+  </div>
+  <div class="dots"><i class="on"></i><i></i><i></i></div>
+</div></section>
+<section class="mm-why"><h2>Made to be opened every day.</h2><div class="g">
+  <div class="c"><h3>It always shows what's next.</h3><p>Open the planner and today's menu is already selected, with the meal that fits the time of day.</p></div>
+  <div class="c"><h3>Progress you can see.</h3><p>Bars fill as you tick off habits and groceries, so you know how close you are.</p></div>
+  <div class="c"><h3>Yours to keep.</h3><p>Prices, purchases and streaks save on your device. No account, no sign-up.</p></div>
+</div></section>
+<main class="app" id="app">
+<div class="app-head"><h2>Your week, ready.</h2><p class="sub">Pick a day, tick things off, log what you spend.</p></div>
+
+<nav class="tabs" aria-label="Planner sections">
+  <button class="tab active" data-tab="meals">🍽 Meals</button>
+  <button class="tab" data-tab="prep">🥘 Meal prep</button>
+  <button class="tab" data-tab="grocery">🛒 Groceries</button>
+  <button class="tab" data-tab="budget">₹ Budget</button>
+  <button class="tab" data-tab="reports">📊 Reports</button>
+</nav>
+
+<section class="panel active" id="meals">
+  <div class="section-head"><div><h2>Your 7-day menu</h2><p class="sub">A week of balanced, protein-rich meals.</p></div><span class="pill">7 DAYS</span></div>
+  <div class="mealshowcase" aria-label="Fresh meal inspiration">
+    <figure><img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=900&q=85" alt="Fresh colorful grain and vegetable bowl" loading="lazy"><figcaption>Fresh, colourful, balanced</figcaption></figure>
+    <div class="showstack"><figure><img src="https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=700&q=85" alt="Grilled chicken with herbs" loading="lazy"><figcaption>Protein-forward plates</figcaption></figure><figure><img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=700&q=85" alt="Healthy meal ingredients" loading="lazy"><figcaption>Simple everyday ingredients</figcaption></figure></div>
+  </div>
+  <div class="daystrip" id="daystrip"></div>
+  <div class="card">
+    <div class="section-head"><div><h2 id="daytitle">Monday</h2><p class="sub" id="daydesc">A balanced start to the week</p></div></div>
+    <div id="mealcontent"></div>
+    <div class="note" id="daynote"></div>
+  </div>
+  <div class="card">
+    <div class="section-head"><div><h2>Daily habits</h2><p class="sub">Small daily habits that support consistent progress.</p></div></div>
+    <div class="list" id="habitlist">
+      <div class="checkitem"><input type="checkbox" id="h1"><label for="h1">Eat protein at each main meal</label></div>
+      <div class="checkitem"><input type="checkbox" id="h2"><label for="h2">Have fruit and vegetables</label></div>
+      <div class="checkitem"><input type="checkbox" id="h3"><label for="h3">Drink water regularly</label></div>
+      <div class="checkitem"><input type="checkbox" id="h4"><label for="h4">Train or take a planned recovery day</label></div>
+      <div class="checkitem"><input type="checkbox" id="h5"><label for="h5">Aim for 7–9 hours of sleep</label></div>
+    </div>
+    <div class="progressrow"><span>Daily checklist</span><strong id="habitcount">0 of 5</strong></div><div class="bar"><div id="habitbar"></div></div>
+    <div class="btnrow"><button class="btn secondary" id="resetday">Clear today</button></div>
+  </div>
+  <p class="tiny">*Nutrition targets are estimates, not a medical prescription. Actual calories/protein vary with brands, recipes and portions. Adjust intake based on your weight trend and training performance.</p>
+</section>
+
+<section class="panel" id="prep">
+  <div class="section-head"><div><h2>Weekly meal prep</h2><p class="sub">A simple routine to reduce daily cooking.</p></div></div>
+  <div class="card">
+    <div class="section-head"><div><h2>Sunday prep</h2><p class="sub">Set yourself up for Monday–Wednesday.</p></div><span class="pill">30–60 MIN</span></div>
+    <div class="list" id="sundayprep"></div>
+  </div>
+  <div class="card">
+    <div class="section-head"><div><h2>Wednesday top-up</h2><p class="sub">Refresh food for the rest of the week.</p></div></div>
+    <div class="list" id="wedprep"></div>
+  </div>
+  <div class="card">
+    <h3>Safe storage reminders</h3>
+    <div class="note">Refrigerate cooked food promptly in shallow containers and use within 3–4 days. Freeze raw chicken in meal-sized portions; thaw in the refrigerator, not on the counter. Reheat leftovers thoroughly.</div>
+    <div class="btnrow"><button class="btn secondary" id="clearprep">Clear selections</button></div>
+  </div>
+</section>
+
+<section class="panel" id="grocery">
+  <div class="section-head"><div><h2>Grocery checklist</h2><p class="sub">A monthly essentials list for one person.</p></div><span class="pill" id="buycount">0 / 14</span></div>
+  <div class="card">
+    <div class="progressrow"><span>Shopping progress</span><strong id="groceryprogress">0%</strong></div><div class="bar"><div id="grocerybar"></div></div>
+    <div id="grocerylist"></div>
+    <div class="btnrow"><button class="btn" id="copylist">Copy list</button><button class="btn secondary" id="resetgrocery">Clear selections</button></div>
+  </div>
+</section>
+
+<section class="panel" id="budget">
+  <div class="section-head"><div><h2>Food budget</h2><p class="sub">A clear view of your monthly food spend.</p></div></div>
+  <div class="card">
+    <p class="sub">Monthly grocery target</p><div class="budgetbig">₹10,000</div>
+    <div class="progressrow"><span>Estimated basket total</span><strong id="basketTotal">₹8,930</strong></div>
+    <div class="bar"><div style="width:89.3%"></div></div>
+    <div class="budgetline"><span>Planned groceries</span><strong>₹8,930</strong></div>
+    <div class="budgetline"><span>Price / extra portion buffer</span><strong>₹1,070</strong></div>
+    <div class="budgetline"><span>Daily average at target</span><strong>₹333</strong></div>
+    <div class="note">These are planning estimates, not live shop prices. Prices vary by area, season and brand. Use the buffer for extra chicken, eggs, produce or price changes.</div>
+  </div>
+
+</section>
+<section class="panel" id="reports">
+  <div class="section-head"><div><h2>Expense reports</h2><p class="sub">Weekly and monthly totals from purchases you log here.</p></div></div>
+  <div class="card">
+    <div class="section-head"><div><h2>This week</h2><p class="sub" id="weekrange">Current Monday–Sunday</p></div><span class="pill">WEEKLY</span></div>
+    <div class="budgetbig" id="weektotal">₹0</div>
+    <div class="budgetline"><span>Purchases logged</span><strong id="weekcount">0</strong></div>
+    <div class="note">The weekly report updates automatically from purchase entries dated this Monday through Sunday.</div>
+  </div>
+  <div class="card">
+    <div class="section-head"><div><h2>This month</h2><p class="sub" id="monthrange">Current calendar month</p></div><span class="pill">MONTHLY</span></div>
+    <div class="budgetbig" id="monthtotal">₹0</div>
+    <div class="budgetline"><span>Purchases logged</span><strong id="monthcount">0</strong></div>
+    <div class="budgetline"><span>₹10,000 budget remaining</span><strong id="monthremaining">₹10,000</strong></div>
+    <div class="bar"><div id="monthbar"></div></div>
+  </div>
+  <div class="card">
+    <div class="section-head"><div><h2>Purchase history</h2><p class="sub">Your saved purchases, with dates and amounts.</p></div></div>
+    <div id="history"><p class="sub">No purchases logged yet.</p></div>
+    <div class="btnrow"><button class="btn" id="exportcsv">Export report (CSV)</button><button class="btn secondary" id="clearhistory">Clear history</button></div>
+    <p class="tiny">Your totals refresh whenever this planner is opened. Records stay in this browser on this device.</p>
+  </div>
+</section>
+
+<div class="footer">Made for your 7-day routine • Works on mobile • Checklist progress is saved locally in this browser</div>
+</main>
+<script src="js/app.js"></script>
+<script src="js/site.js"></script>
+</body></html>
